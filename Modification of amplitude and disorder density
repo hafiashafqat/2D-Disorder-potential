@@ -1,0 +1,42 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Setup: 2D grid definition
+grid_size = 200
+x = np.linspace(-10, 10, grid_size)
+y = np.linspace(-10, 10, grid_size)
+X, Y = np.meshgrid(x, y)
+
+# Function to generate 2D disordered potential
+def generate_disordered_potential(num_bumps=50, amplitude=1.0, sigma=0.5):
+    potential = np.zeros((grid_size, grid_size))
+    for _ in range(num_bumps):
+        x0, y0 = np.random.uniform(-10, 10, 2)
+        A = amplitude * (2 * np.random.rand() - 1)  # random value between -A and A
+        bump = A * np.exp(-((X - x0)**2 + (Y - y0)**2) / (2 * sigma**2))
+        potential += bump
+    return potential
+
+# Define amplitudes and disorder densities (number of bumps)
+amplitudes = [1.0, 2.0]
+bump_counts = [30, 100]
+
+# Create a 2x2 plot for combinations
+fig, axes = plt.subplots(2, 2, figsize=(12, 10))
+fig.suptitle("2D Disordered Potential: Varying Amplitude and Bump Density", fontsize=16)
+
+for i, amplitude in enumerate(amplitudes):
+    for j, num_bumps in enumerate(bump_counts):
+        # Generate potential
+        potential = generate_disordered_potential(num_bumps=num_bumps, amplitude=amplitude)
+        
+        # Plot
+        ax = axes[i, j]
+        im = ax.imshow(potential, extent=[-10, 10, -10, 10], origin='lower', cmap='viridis')
+        ax.set_title("Amplitude = {}, Bumps = {}".format(amplitude, num_bumps))
+        ax.set_xlabel("x")
+        ax.set_ylabel("y")
+        fig.colorbar(im, ax=ax, shrink=0.7)
+
+plt.tight_layout(rect=[0, 0, 1, 0.95])
+plt.show()
